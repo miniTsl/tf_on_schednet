@@ -3,11 +3,11 @@ def config_agent(_flags):
     flags = _flags
     flags.DEFINE_string("agent", "schednet", "Agent")
     
-    flags.DEFINE_integer("training_step", 1000000, "Training time step")
-    flags.DEFINE_integer("testing_step", 80000, "Testing time step")
+    flags.DEFINE_integer("training_step", 2000000, "Training time step")
+    flags.DEFINE_integer("testing_step", 1000, "Testing time step")
     flags.DEFINE_integer("max_step", 40, "Maximum time step per episode")
-    flags.DEFINE_boolean("eval_on_train", False, "Evaluation for every eval_step")
-    flags.DEFINE_integer("eval_step", 250, "Number of steps before evaluating")
+    flags.DEFINE_boolean("eval_on_train", True, "Evaluation for every eval_step")
+    flags.DEFINE_integer("eval_step", 5000, "Number of steps before evaluating")
 
     # RL setting
     flags.DEFINE_float("df", 0.9, "Discount factor")
@@ -40,7 +40,7 @@ def config_agent(_flags):
     flags.DEFINE_integer("s_num", 1, "Number of agent for sheduling")
 
     # IC3net中的参数
-    flags.DEFINE_integer("num_epochs", 1000, "Number of training epochs")
+    flags.DEFINE_integer("num_epochs", 2000, "Number of training epochs")
     flags.DEFINE_integer("max_steps", 40, "force to end the game after this many steps")
     flags.DEFINE_integer("epoch_size", 1000, "totla steps for each epoch")
     

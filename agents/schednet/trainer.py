@@ -98,7 +98,7 @@ class Trainer(object):
                 step_in_episode = 0  # 本轨迹内用的总步数
                 episode_num += 1    # 轨迹数+1
                 done = False    # 本轨迹未完
-                obs_n = self._env.reset(1)   # 本轨迹通过envwrapper而初始环境
+                obs_n = self._env.reset(epochs-1)   # 本轨迹通过envwrapper而初始环境,注意epochs需要-1，为了与IC3net中保持一致
                 '''从PP环境中返回的obs_n、reward、done、info都是list。
                 ic3net返回的obs是（tuple(tuple（数, 数, array（1，1，59）)）,而且三个array的形状还不一样，在envwrapper中转换成了list'''
                 
@@ -164,12 +164,12 @@ class Trainer(object):
                     #         print("[train_episode %d]" % (episode_num)," total step till now:", global_step, " step_used:", step_in_ep, " reward", total_reward)
                     #     done = True
 
-                    # if FLAGS.eval_on_train and global_step % FLAGS.eval_step == 0:
-                    #     self.test(global_step)
-                    #     break
+                    if FLAGS.eval_on_train and global_step % FLAGS.eval_step == 0:
+                        self.test(epochs)
+                        break
             np.set_printoptions(precision=3)
             print("[Train_epoch %d]\n" % (epochs),"Total_steps_till_now:", global_step, " Success_rate: {:.3f}".format(success_num/episode_num),
-                  " Time: {:.2f}s".format(time()-epoch_strat_time), " Add_rate: {:.4f}".format(self._env.env.add_rate) , "\n", "Epoch_average_reward: ", total_reward/episode_num )
+                  " Time: {:.2f}s".format(time()-epoch_strat_time), " Add_rate: {:.4f}".format(self._env.env.add_rate) , "\n", "Ave_reward: ", total_reward/episode_num )
         
             
         
@@ -361,24 +361,25 @@ class Trainer(object):
 
         return np.array(check_list)
     
-    def test(self, curr_ep=None):
+    def test(self, epochs=None):
         global_step = 0
         episode_num = 0
         total_reward = 0
+        success_num = 0
         obs_cnt = np.zeros(self._n_predator)
-        
+        test_strat_time = time()
         while global_step < testing_step:
-
+            done = False
             episode_num += 1
-            step_in_ep = 0
-            obs_n = self._env.reset()  
+            step_in_epiosde = 0
+            obs_n = self._env.reset(epochs)  
             info_n = self._env.env.get_info()
             h_schedule_n = np.zeros(self._n_predator)
             obs_n, state, _ = self.get_obs_state_with_schedule(obs_n, info_n, h_schedule_n, init=True)
 
-            while True:
+            while not done:
                 global_step += 1
-                step_in_ep += 1
+                step_in_epiosde += 1
 
                 schedule_n, priority = self.get_schedule(obs_n, global_step, FLAGS.sched)
                 action_n = self.get_action(obs_n, schedule_n, global_step, False)
@@ -387,33 +388,40 @@ class Trainer(object):
 
                 obs_cnt += self.check_obs(obs_n_next)
 
-                if FLAGS.gui:
-                    self.canvas.draw(state_next * FLAGS.map_size, [0]*self._n_predator, "Test")
+                # if FLAGS.gui:
+                #     self.canvas.draw(state_next * FLAGS.map_size, [0]*self._n_predator, "Test")
 
                 obs_n = obs_n_next
                 state = state_next
-                total_reward += np.sum(reward_n)
+                total_reward += reward_n
 
-                if is_episode_done(done_n, global_step, "test") or step_in_ep > FLAGS.max_step:
-                    if FLAGS.gui:
-                        self.canvas.draw(state_next * FLAGS.map_size, [0]*self._n_predator, "Test", True)
-                    break
+                if is_episode_done(done_n, global_step):#, "test"):
+                    done = True
+                    # if FLAGS.gui:
+                    #     self.canvas.draw(state_next * FLAGS.map_size, [0]*self._n_predator, "Test", True)
+                    # break
+                if done:
+                    success_num += (1-self._env.env.has_failed)
+        
+        np.set_printoptions(precision=3)
+        print("[Test_after_epoch %d]\n" % (epochs)," Success_rate: {:.3f}".format(success_num/episode_num),
+                " Time: {:.2f}s".format(time()-test_strat_time), " Add_rate: {:.4f}".format(self._env.env.add_rate) , "\n", "Ave_reward: ", total_reward/episode_num )
+    
+        # print("Test result at total steps: ", curr_ep, " Average steps to capture: ", float(global_step) / episode_num,
+        #       " Average reward: ", float(total_reward) / episode_num, "  Average obs_cnt: ",obs_cnt / episode_num)
+        #self._eval.update_value("test_result", float(global_step)/episode_num, epochs) # 结果文件中保存test数据
 
-        print("Test result at total steps: ", curr_ep, " Average steps to capture: ", float(global_step) / episode_num,
-              " Average reward: ", float(total_reward) / episode_num, "  Average obs_cnt: ",obs_cnt / episode_num)
-        self._eval.update_value("test_result", float(global_step)/episode_num, curr_ep) # 结果文件中保存test数据
 
+def is_episode_done(done, step):#, e_type="train"):
+    # if e_type == "test":
+    #     if done or step >= FLAGS.max_steps:
+    #         return True
+    #     else:
+    #         return False
 
-def is_episode_done(done, step, e_type="train"):
-    if e_type == "test":
-        if done or step >= FLAGS.testing_step:
-            return True
-        else:
-            return False
-
+    # else:
+    if done or step >= FLAGS.max_steps:
+        return True
     else:
-        if done or step >= FLAGS.max_steps:
-            return True
-        else:
-            return False
+        return False
 
