@@ -167,7 +167,7 @@ class Trainer(object):
                     # if FLAGS.eval_on_train and global_step % FLAGS.eval_step == 0:
                     #     self.test(global_step)
                     #     break
-            print("[Train_epoch %d]\n" % (epochs + 1),"Total_steps_till_now:", global_step, " Success_rate{:.3f}: ".format(success_num/episode_num),
+            print("[Train_epoch %d]\n" % (epochs),"Total_steps_till_now:", global_step, " Success_rate: {:.3f}".format(success_num/episode_num),
                   " Time: {:.2f}s".format(time()-epoch_strat_time), " Add_rate: {:.5f}".format(self._env.env.add_rate) , "\n", "Epoch_average_reward: {:.2f}".format(total_reward/episode_num))
         
             
