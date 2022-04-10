@@ -168,7 +168,7 @@ class Trainer(object):
                         self.test(epochs)
                         break
             np.set_printoptions(precision=2)
-            print("[Train_epoch %d]\n" % (epochs),"Total_steps_till_now:", global_step, " Success_rate: {:.3f}".format(success_num/episode_num),
+            print("[Train_epoch %d]\n" % (epochs),"Total_steps_till_now:", global_step, " Success_rate: {:.2f}".format(success_num/episode_num),
                   " Time: {:.2f}s".format(time()-epoch_strat_time), " Add_rate: {:.3f}".format(self._env.env.add_rate) , "\n", "Ave_reward:", total_reward/episode_num )
         
             
@@ -404,7 +404,7 @@ class Trainer(object):
                     success_num += (1-self._env.env.has_failed)
         
         np.set_printoptions(precision=2)
-        print("[Test_after_epoch %d]\n" % (epochs)," Success_rate: {:.3f}".format(success_num/episode_num),
+        print("[Test_after_epoch %d]\n" % (epochs)," Success_rate: {:.2f}".format(success_num/episode_num),
                 " Time: {:.2f}s".format(time()-test_strat_time), " Add_rate: {:.3f}".format(self._env.env.add_rate) , "\n", "Ave_reward:", total_reward/episode_num )
     
         # print("Test result at total steps: ", curr_ep, " Average steps to capture: ", float(global_step) / episode_num,
