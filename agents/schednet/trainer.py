@@ -366,14 +366,14 @@ class Trainer(object):
         episode_num = 0
         total_reward = 0
         success_num = 0
-        obs_cnt = np.zeros(self._n_predator)
+        #obs_cnt = np.zeros(self._n_predator)
         test_strat_time = time()
         while global_step < testing_step:
             done = False
             episode_num += 1
             step_in_epiosde = 0
             obs_n = self._env.reset(epochs)  
-            info_n = self._env.env.get_info()
+            info_n = self._env.env.get_state()
             h_schedule_n = np.zeros(self._n_predator)
             obs_n, state, _ = self.get_obs_state_with_schedule(obs_n, info_n, h_schedule_n, init=True)
 
@@ -386,7 +386,7 @@ class Trainer(object):
                 obs_n_without_schedule, reward_n, done_n, info_n = self._env.step(action_n)
                 obs_n_next, state_next, h_schedule_n = self.get_obs_state_with_schedule(obs_n_without_schedule, info_n, h_schedule_n, schedule_n)
 
-                obs_cnt += self.check_obs(obs_n_next)
+                # obs_cnt += self.check_obs(obs_n_next)
 
                 # if FLAGS.gui:
                 #     self.canvas.draw(state_next * FLAGS.map_size, [0]*self._n_predator, "Test")
