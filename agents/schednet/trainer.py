@@ -163,14 +163,12 @@ class Trainer(object):
                     #     if print_flag:
                     #         print("[train_episode %d]" % (episode_num)," total step till now:", global_step, " step_used:", step_in_ep, " reward", total_reward)
                     #     done = True
-
-                    if FLAGS.eval_on_train and global_step % FLAGS.eval_step == 0:
-                        self.test(epochs)
-                        break
             np.set_printoptions(precision=2)
             print("[Train_epoch %d]\n" % (epochs),"Total_steps_till_now:", global_step, " Success_rate: {:.2f}".format(success_num/episode_num),
                   " Time: {:.2f}s".format(time()-epoch_strat_time), " Add_rate: {:.3f}".format(self._env.env.add_rate) , "\n", "Ave_reward:", total_reward/episode_num )
-        
+
+            if FLAGS.eval_on_train and global_step % FLAGS.eval_step == 0:
+                self.test(epochs)
             
         
         
@@ -371,7 +369,7 @@ class Trainer(object):
         while global_step < testing_step:
             done = False
             episode_num += 1
-            step_in_epiosde = 0
+            step_in_episode = 0
             obs_n = self._env.reset(epochs)  
             info_n = self._env.env.get_state()
             h_schedule_n = np.zeros(self._n_predator)
@@ -379,7 +377,7 @@ class Trainer(object):
 
             while not done:
                 global_step += 1
-                step_in_epiosde += 1
+                step_in_episode += 1
 
                 schedule_n, priority = self.get_schedule(obs_n, global_step, FLAGS.sched)
                 action_n = self.get_action(obs_n, schedule_n, global_step, False)
@@ -395,8 +393,7 @@ class Trainer(object):
                 state = state_next
                 total_reward += reward_n
 
-                if is_episode_done(done_n, global_step):#, "test"):
-                    done = True
+                done = is_episode_done(done_n, step_in_episode)#, "test"):
                     # if FLAGS.gui:
                     #     self.canvas.draw(state_next * FLAGS.map_size, [0]*self._n_predator, "Test", True)
                     # break
