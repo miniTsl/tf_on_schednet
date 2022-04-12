@@ -307,3 +307,12 @@
 [INFO|main.py:141] 2022-04-10 14:29:14,688 > [Agent] Agent: schednet
 [INFO|trainer.py:30] 2022-04-10 14:29:14,772 > [Agent] SchedNet trainer is created
 [INFO|agent.py:25] 2022-04-10 14:29:14,773 > [Agent] Predator Agent is created
+[INFO|main.py:141] 2022-04-10 13:05:27,683 > [Agent] Agent: schednet
+[INFO|trainer.py:30] 2022-04-10 13:05:28,294 > [Agent] SchedNet trainer is created
+[INFO|agent.py:25] 2022-04-10 13:05:28,294 > [Agent] Predator Agent is created
+[INFO|main.py:141] 2022-04-10 13:08:23,913 > [Agent] Agent: schednet
+[INFO|trainer.py:30] 2022-04-10 13:08:23,932 > [Agent] SchedNet trainer is created
+[INFO|agent.py:25] 2022-04-10 13:08:23,932 > [Agent] Predator Agent is created
+[INFO|main.py:141] 2022-04-12 11:29:19,877 > [Agent] Agent: schednet
+[INFO|trainer.py:30] 2022-04-12 11:29:19,929 > [Agent] SchedNet trainer is created
+[INFO|agent.py:25] 2022-04-12 11:29:19,929 > [Agent] Predator Agent is created
