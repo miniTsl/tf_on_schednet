@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf8
 
+from cmath import inf
 import numpy as np
 import tensorflow as tf
 import config
@@ -29,8 +30,8 @@ class ActionSelectorNetwork:
 
         self.sess = sess
         self.n_agent = n_agent
-        self.obs_dim_per_unit = obs_dim_per_unit
-        self.action_dim = action_dim
+        self.obs_dim_per_unit = obs_dim_per_unit    # 62
+        self.action_dim = action_dim    # 1?
 
         if nn_id == None:
             scope = 'actor'
@@ -56,8 +57,9 @@ class ActionSelectorNetwork:
         # actor loss function (mean Q-values under current policy with regularization)
         self.actor_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=scope)
         self.responsible = tf.multiply(self.actions, self.a_onehot)
-        log_prob = tf.log(tf.reduce_sum(self.responsible, reduction_indices=1, keep_dims=True))
-        entropy = -tf.reduce_sum(self.actions*tf.log(self.actions), 1)
+        log_prob = tf.log(tf.clip_by_value(tf.reduce_sum(self.responsible, reduction_indices=1, keep_dims=True),
+                                           1e-10, inf)) # reduction_indices：在以前版本中用来指定轴
+        entropy = -tf.reduce_sum(self.actions*tf.log(tf.clip_by_value(self.actions,1e-10,inf)), 1)
         self.loss = tf.reduce_sum(-(tf.multiply(log_prob, self.td_errors) + 0.01*entropy)) 
         var_grads = tf.gradients(self.loss, self.actor_vars)
         self.actor_train_op = tf.train.AdamOptimizer(lr_actor * lr_decay).apply_gradients(zip(var_grads,self.actor_vars))
@@ -66,7 +68,7 @@ class ActionSelectorNetwork:
 
         obs_list = list()
         for i in range(self.n_agent):
-            obs_list.append(obs[:, i * self.obs_dim_per_unit:(i + 1) * self.obs_dim_per_unit])
+            obs_list.append(obs[:, i * self.obs_dim_per_unit: (i + 1) * self.obs_dim_per_unit])
 
         ret = comm.generate_comm_network(obs_list, self.obs_dim_per_unit, self.action_dim, self.n_agent, schedule=schedule)
         return ret

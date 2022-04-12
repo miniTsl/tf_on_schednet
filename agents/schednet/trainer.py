@@ -5,12 +5,11 @@ import numpy as np
 import logging
 
 from agents.schednet.agent import PredatorAgent
-from agents.simple_agent import RandomAgent
 from agents.evaluation import Evaluation
 
-import config
 from envs.gui import canvas
 
+import config
 FLAGS = config.flags.FLAGS
 logger = logging.getLogger('Agent')
 result = logging.getLogger('Result')
@@ -28,7 +27,7 @@ class Trainer(object):
 
     def __init__(self, env):
         logger.info("SchedNet trainer is created")
-        self._env = env
+        self._env = env # 一个wrapper对象
         self._eval = Evaluation()
         self._agent_profile = env.env.agent_profile
         '''
@@ -56,25 +55,19 @@ class Trainer(object):
                 len():5
         '''
         self._n_predator = self._agent_profile['predator']['n_agent']
-        #self._n_prey = self._agent_profile['prey']['n_agent']
         
         # State and obs <additionally include <history information>
         # PP中的state_dim包括了调度信息（调度共n_predator个）
         self._state_dim = self._n_predator*2 + self._n_predator # 本质上state_dim就是num_agent * 2(x,y) + schedule数量（即n_agent）
 
-        self._obs_dim = 62#self._agent_profile['predator']['obs_dim'][0] + 1
+        self._obs_dim = 62 
         
         # get predator agent
         self._predator_agent = PredatorAgent(n_agent=self._agent_profile['predator']['n_agent'],
                                              action_dim=self._agent_profile['predator']['act_dim'],
                                              state_dim=self._state_dim,
                                              obs_dim=self._obs_dim)
-        # Prey agent (randomly moving)
-        '''
-        self._prey_agent = []
-        for _ in range(self._n_prey):
-            self._prey_agent.append(RandomAgent(5))
-        '''
+
         self.epsilon = 0.5  # Init value for epsilon
 
         if FLAGS.gui:  # Enable GUI
@@ -83,7 +76,6 @@ class Trainer(object):
 
     def learn(self):
         global_step = 0 # 总步数
-        print_flag = True   # 打印训练数据
         epochs = 0
         while epochs < num_epochs:
             # 新epoch
@@ -98,9 +90,10 @@ class Trainer(object):
                 step_in_episode = 0  # 本轨迹内用的总步数
                 episode_num += 1    # 轨迹数+1
                 done = False    # 本轨迹未完
+                
                 obs_n = self._env.reset(epochs-1)   # 本轨迹通过envwrapper而初始环境,注意epochs需要-1，为了与IC3net中保持一致
-                '''从PP环境中返回的obs_n、reward、done、info都是list。
-                ic3net返回的obs是（tuple(tuple（数, 数, array（1，1，59）)）,而且三个array的形状还不一样，在envwrapper中转换成了list'''
+                '''从PP环境中返回的obs_n、reward、done、info都是 list。
+                ic3net返回的obs是（tuple(tuple（数, 数, array（1，1，59）)）,而且最里层的三个元素的形状还不一样，在envwrapper中转换成了list'''
                 
                 info_n = self._env.env.get_state()   
                 '''PP 中：
@@ -111,7 +104,7 @@ class Trainer(object):
                 h_schedule_n = np.zeros(self._n_predator)  # schedule history
                 # 类型是 np.array，包含每个agent的调度值
                 
-                # 在obs和state后面分别添加历史信息，正如 第58行所说，同时将obs的数据类型修改为ndarray
+                # 在obs和state后面分别添加历史信息，正如 第58行所说。同时将obs的数据类型修改为ndarray
                 obs_n, state, _ = self.get_obs_state_with_schedule(obs_n, info_n, h_schedule_n, init=True)
                 ''' <schednet要求的最后的obs_n的数据类型是二维array> 
                     pp环境的obs(最后一列已经加了调度值)最开始的一次观测：
@@ -125,13 +118,13 @@ class Trainer(object):
                     global_step += 1
                     step_in_epoch += 1
                     step_in_episode += 1
-
+                    # 这是obs_n已经是ndarray了
                     schedule_n, priority = self.get_schedule(obs_n, global_step, FLAGS.sched)
                     action_n = self.get_action(obs_n, schedule_n, global_step)
                     obs_n_without_schedule, reward_n, done_n, info_n = self._env.step(action_n)
                     '''从PP环境中返回的obs_n、reward、done、info都是list。
                     ic3net返回的obs是（tuple(tuple（数, 数, array（1，1，59）)）,而且三个array的形状还不一样，在envwrapper中转换成了list
-                    reward_n其实不必由ndarray转换为list因为train中反正要求和，done反正PP代码中也要对所有的done求和，干脆返回TF中的episode_over，一个bool类型的数'''
+                    reward_n其实不必由ic3net的ndarray转换为list因为trainer.py中反正要求和，done反正PP代码中也要对所有的done求和，干脆返回TF中的episode_over，一个bool类型的数'''
                     # reward_n = reward_n.tolist()
                     
                     obs_n_next, state_next, h_schedule_n = self.get_obs_state_with_schedule(obs_n_without_schedule, info_n, h_schedule_n, schedule_n)
@@ -165,7 +158,7 @@ class Trainer(object):
                     #     done = True
             np.set_printoptions(precision=2)
             print("[Train_epoch %d]\n" % (epochs),"Total_steps_till_now:", global_step, " Success_rate: {:.2f}".format(success_num/episode_num),
-                  " Time: {:.2f}s".format(time()-epoch_strat_time), " Add_rate: {:.3f}".format(self._env.env.add_rate) , "\n", "Ave_reward:", total_reward/episode_num )
+                  " Time: {:.2f}s".format(time()-epoch_strat_time), " Add_rate: {:.2f}".format(self._env.env.add_rate) , "\n", "Ave_reward:", total_reward/episode_num )
 
             if FLAGS.eval_on_train and global_step % FLAGS.eval_step == 0:
                 self.test(epochs)
@@ -271,24 +264,24 @@ class Trainer(object):
             predator_action = self._predator_agent.explore()
         else:
             # Exploitation利用已有策略
-            predator_obs = [obs_n[i] for i in self._agent_profile['predator']['idx']]
+            predator_obs = [obs_n[i] for i in self._agent_profile['predator']['idx']]   # list of array
             predator_action = self._predator_agent.act(predator_obs, schedule_n)
 
         for i, idx in enumerate(self._agent_profile['predator']['idx']):
             act_n[idx] = predator_action[i]
         
         # TFJ不需要猎物，所以没有相应的action
-        # Action of prey
-        '''
-        for i, idx in enumerate(self._agent_profile['prey']['idx']):
-            act_n[idx] = self._prey_agent[i].act(None)
-        '''
         
         # 将action转换为np array
         return np.array(act_n, dtype=np.int32)
 
     def get_schedule(self, obs_n, global_step, type, train=True):
-        predator_obs = [obs_n[i] for i in self._agent_profile['predator']['idx']]
+        '''
+        return:
+            ret: array [ _n_predator ] of 0 or 1
+            priority: weight array for schedule. used for backward learning
+        '''
+        predator_obs = [obs_n[i] for i in self._agent_profile['predator']['idx']]   # list of array
 
         if train and (global_step < FLAGS.m_size * FLAGS.pre_train_step or np.random.rand() < self.epsilon):
             # Exploration: Schedule k random agent
@@ -402,7 +395,7 @@ class Trainer(object):
         
         np.set_printoptions(precision=2)
         print("[Test_after_epoch %d]\n" % (epochs)," Success_rate: {:.2f}".format(success_num/episode_num),
-                " Time: {:.2f}s".format(time()-test_strat_time), " Add_rate: {:.3f}".format(self._env.env.add_rate) , "\n", "Ave_reward:", total_reward/episode_num )
+                " Time: {:.2f}s".format(time()-test_strat_time), " Add_rate: {:.2f}".format(self._env.env.add_rate) , "\n", "Ave_reward:", total_reward/episode_num )
     
         # print("Test result at total steps: ", curr_ep, " Average steps to capture: ", float(global_step) / episode_num,
         #       " Average reward: ", float(total_reward) / episode_num, "  Average obs_cnt: ",obs_cnt / episode_num)

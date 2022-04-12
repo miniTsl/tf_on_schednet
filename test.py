@@ -6,6 +6,7 @@
 #     args.ABC = 99   # 可以直接自动添加参数
 # print(args)
 
+from cmath import inf
 import numpy as np
 # np.concatenate()
 
@@ -32,3 +33,7 @@ print(print_tuple(a))
 
 a = np.array([1,1,1,1])
 print(np.sum(a))
+
+a = [np.array([1,2,3]), np.array([2,3,3])]
+print(np.concatenate(a), type(np.concatenate(a)))
+print(inf>1e100)

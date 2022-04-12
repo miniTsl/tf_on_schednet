@@ -1,8 +1,14 @@
 # coding=utf8
 def config_agent(_flags):
     flags = _flags
-    flags.DEFINE_string("agent", "schednet", "Agent")
     
+    # IC3net中的参数
+    flags.DEFINE_integer("num_epochs", 2000, "Number of training epochs")
+    flags.DEFINE_integer("max_steps", 40, "force to end the game after this many steps")
+    flags.DEFINE_integer("epoch_size", 1000, "totla steps for each epoch")
+    
+    # schednet中的参数
+    flags.DEFINE_string("agent", "schednet", "Agent")
     flags.DEFINE_integer("training_step", 2000000, "Training time step")
     flags.DEFINE_integer("testing_step", 1000, "Testing time step")
     flags.DEFINE_integer("max_step", 40, "Maximum time step per episode")
@@ -28,21 +34,16 @@ def config_agent(_flags):
     flags.DEFINE_boolean("load_nn", False, "Load nn from file or not")
     flags.DEFINE_string("nn_file", "", "The name of file for loading")
     flags.DEFINE_boolean("train", True, "Training or testing")
-
     flags.DEFINE_integer("comm", 5, "Communication type")
-    flags.DEFINE_integer("capa", 2, "Capacity for comm")
     flags.DEFINE_boolean("e_share", False, "Share encoder")
     flags.DEFINE_boolean("s_share", False, "Share sender")
     flags.DEFINE_boolean("a_share", False, "Share aggregator")
-
     flags.DEFINE_string("sched", "schedule", "Scheduler type")
     flags.DEFINE_string("sch_type", "top", "Scheduling algorithm type (top, softmax)")
+    
+    flags.DEFINE_integer("capa", 2, "Capacity for comm")
     flags.DEFINE_integer("s_num", 1, "Number of agent for sheduling")
 
-    # IC3net中的参数
-    flags.DEFINE_integer("num_epochs", 2000, "Number of training epochs")
-    flags.DEFINE_integer("max_steps", 40, "force to end the game after this many steps")
-    flags.DEFINE_integer("epoch_size", 1000, "totla steps for each epoch")
     
 def get_filename():
     import config
