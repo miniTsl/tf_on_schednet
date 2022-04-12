@@ -27,7 +27,7 @@ class PredatorAgent(object):
         self._n_agent = n_agent
         self._state_dim = state_dim
         self._action_dim_per_unit = action_dim
-        self._obs_dim_per_unit = obs_dim
+        self._obs_dim_per_unit = obs_dim    # 62 for medium
         self._obs_dim = self._obs_dim_per_unit * self._n_agent
 
         self._name = name
@@ -62,8 +62,8 @@ class PredatorAgent(object):
     def act(self, obs_list, schedule_list):
         
         # ndarray(1,20)
-        action_prob_list = self.action_selector.action_for_state(np.concatenate(obs_list)
-                                                                   .reshape(1, self._obs_dim),
+        action_prob_list = self.action_selector.action_for_state(np.concatenate(obs_list)   # 把list of array 压缩为一行的array
+                                                                   .reshape(1, self._obs_dim),  # shape：[1, 62 * 10]
                                                                  schedule_list.reshape(1, self._n_agent))
 
         if np.isnan(action_prob_list).any():
@@ -71,7 +71,7 @@ class PredatorAgent(object):
         
         # list(10)
         action_list = []
-        for action_prob in action_prob_list.reshape(self._n_agent, self._action_dim_per_unit):# 每一行应该是每个agent选择动作的概率分布
+        for action_prob in action_prob_list.reshape(self._n_agent, self._action_dim_per_unit):# 每一行应该是每个agent选择动作0 or 1的概率,总shape[10,2]
             # p: The probabilities associated with each entry in a.按照概率分布选择a中的元素
             action_list.append(np.random.choice(len(action_prob), p=action_prob))
 

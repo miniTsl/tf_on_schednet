@@ -103,15 +103,7 @@ class TrafficJunctionEnv(gym.Env):
                 else:
                     act_space = self.action_space[i].nvec[0]
                     com_space = self.action_space[i].nvec[1]
-                # if agent.itype == 'prey':
-                #     self.agent_profile[agent.itype] = {
-                #     'n_agent': 0,
-                #     'idx': [0],
-                #     'act_dim': 0,
-                #     'com_dim': 0,
-                #     'obs_dim': 0
-                # }
-                # else:
+                    
                 self.agent_profile[agent.itype] = {
                     'n_agent': 1,
                     'idx': [i],
