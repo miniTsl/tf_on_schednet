@@ -408,7 +408,7 @@ class TrafficJunctionEnv(gym.Env):
         self.bool_base_grid = self.empty_bool_base_grid.copy()
 
         # <<Mark>> cars' location in Bool grid
-        for i, p in enumerate(self.car_loc):
+        for i, p in enumerate(self.car_loc):    # (14, 14, 59)
             self.bool_base_grid[p[0] + self.vision, p[1] + self.vision, self.CAR_CLASS] += 1
 
 
