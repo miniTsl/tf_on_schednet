@@ -92,12 +92,12 @@ class Trainer(object):
                 done = False    # 本轨迹未完
                 
                 obs_n = self._env.reset(epochs-1)   # 本轨迹通过envwrapper而初始环境,注意epochs需要-1，为了与IC3net中保持一致
-                '''从PP环境中返回的obs_n、reward、done、info都是 list。
-                ic3net返回的obs是（tuple(tuple（数, 数, array（1，1，59）)）,而且最里层的三个元素的形状还不一样，在envwrapper中转换成了list'''
+                '''从PP环境reset返回的obs_n、reward、done、info都是 list。
+                ic3net环境reset返回的obs是（tuple(tuple（数, 数, array（1，1，59）)）,而且最里层的三个元素的形状还不一样，在envwrapper中转换成了list'''
                 
                 info_n = self._env.env.get_state()   
                 '''PP 中：
-                # info_n是一个字典list，每个字典键值对为state: 行array        list中共n_agent个字典。其实只有第一个有用，因为它们都一样的
+                # info_n是一个字典list，每个字典键值对为"state": 行array        list中共n_agent个字典。其实只有第一个有用，因为它们都一样的
                 # state行array的内容是图中 <所有agent的方位信息>即全局信息，大小为 agent_num*2(x,y)
                 '''
                 
@@ -128,16 +128,15 @@ class Trainer(object):
                     # reward_n = reward_n.tolist()
                     
                     obs_n_next, state_next, h_schedule_n = self.get_obs_state_with_schedule(obs_n_without_schedule, info_n, h_schedule_n, schedule_n)
-                    done_single = done_n    # bool类型即可
                     '''
-                    schednet中state是ndarray，里面有14个元素（2*5+4），又忘了？是全局的方位信息！
+                    schednet中增加历史信息后的state是ndarray，里面有14个元素（2*5+4），又忘了？是全局的方位信息+调度值！
                     reward是list，里面有5个数，是每个agent获得的奖励值
-                    priority是ndarray，里面有4个数，应该是agent的调度权重？
+                    priority是ndarray，里面有4个数，是agent的调度概率，schedule_n是调度值（0 or 1）
                     done_n是list，里面是False或者True，done_single是bool类型 
                     '''
-                    
+                    done_single = done_n    # bool类型即可
                     # 传入train_agents中的都是ndarray
-                    self.train_agents(state, obs_n, action_n, reward_n, state_next, obs_n_next, schedule_n, priority, done_single)
+                    self.train_agents(state, obs_n, action_n, reward_n, state_next, obs_n_next, schedule_n, priority, done_single, global_step)
                     
                     if FLAGS.gui:
                         self.canvas.draw(state_next * FLAGS.map_size, [0]*self._n_predator, "Train")
@@ -294,13 +293,13 @@ class Trainer(object):
             # Exploitation
             return self._predator_agent.schedule(predator_obs)
 
-    def train_agents(self, state, obs_n, action_n, reward_n, state_next, obs_n_next, schedule_n, priority, done):
+    def train_agents(self, state, obs_n, action_n, reward_n, state_next, obs_n_next, schedule_n, priority, done, global_step):
         predator_obs = [obs_n[i] for i in self._agent_profile['predator']['idx']]
         predator_action = [action_n[i] for i in self._agent_profile['predator']['idx']]
         predator_reward = [reward_n[i] for i in self._agent_profile['predator']['idx']]
         predator_obs_next = [obs_n_next[i] for i in self._agent_profile['predator']['idx']]
         self._predator_agent.train(state, predator_obs, predator_action, predator_reward,
-                                   state_next, predator_obs_next, schedule_n, priority, done)
+                                   state_next, predator_obs_next, schedule_n, priority, done, global_step)
 
     def get_h_obs_state(self, obs_n, state, h_schedule):
         obs_n_h = np.concatenate((obs_n[0:self._n_predator], h_schedule.reshape((self._n_predator,1))), axis=1)

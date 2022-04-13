@@ -77,7 +77,7 @@ class PredatorAgent(object):
 
         return action_list
 
-    def train(self, state, obs_list, action_list, reward_list, state_next, obs_next_list, schedule_n, priority, done):
+    def train(self, state, obs_list, action_list, reward_list, state_next, obs_next_list, schedule_n, priority, done, global_step):
 
         s = state
         o = obs_list
@@ -89,7 +89,8 @@ class PredatorAgent(object):
         p = priority
 
         self.store_sample(s, o, a, r, s_, o_, c, p, done)
-        self.update_ac()
+        if (global_step+1) % FLAGS.update_gap == 0:
+           self.update_ac()
         return 0
 
     def store_sample(self, s, o, a, r, s_, o_, c, p, done):
