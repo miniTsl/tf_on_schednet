@@ -7,7 +7,7 @@ def config_agent(_flags):
     flags.DEFINE_integer("max_steps", 40, "force to end the game after this many steps")
     flags.DEFINE_integer("epoch_size", 80000, "totla steps for each epoch")
     
-    flags.DEFINE_integer("update_gap", 64, "steps between updates")
+    flags.DEFINE_integer("update_gap", 100, "steps between updates")
     
     # schednet中的参数
     flags.DEFINE_string("agent", "schednet", "Agent")
@@ -20,7 +20,7 @@ def config_agent(_flags):
     # RL setting
     flags.DEFINE_float("df", 0.9, "Discount factor")
     flags.DEFINE_integer("b_size", 10000, "Size of the replay memory")
-    flags.DEFINE_integer("m_size", 64, "Minibatch size, how much memory to replay for each update")
+    flags.DEFINE_integer("m_size", 100, "Minibatch size, how much memory to replay for each update")
     flags.DEFINE_integer("pre_train_step", 10, "during [m_size * pre_train_step] take random action")
 
     # Network training setting
