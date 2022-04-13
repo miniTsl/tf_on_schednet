@@ -33,6 +33,7 @@ Success: 0.54
 Steps-taken: 40.00
 
 ### tf_on_schednet
+#### debug_0
 [Train_epoch 1164]
  Total_steps_till_now: 1164000  Success_rate: 0.00  Time: 22.28s  Add_rate: 0.180 
  Ave_reward: [-35.03 -44.12 -25.3  -51.36 -54.81 -45.7  -35.62 -38.28 -45.59 -50.1 ]
@@ -70,3 +71,49 @@ Traceback (most recent call last):
   File "/home/ubuntu/tf_on_schednet/agents/schednet/agent.py", line 70, in act
     raise ValueError('action_prob contains NaN')
 ValueError: action_prob contains NaN
+#### debug_1
+[Train_epoch 279]
+ Total_steps_till_now: 11160000  Success_rate: 0.26  Time: 101.74s  Add_rate: 0.05 
+ Ave_reward: [-12.73 -12.02 -11.8  -11.83 -10.86 -12.17 -12.43 -11.66 -12.63 -10.6 ]
+[Train_epoch 280]
+ Total_steps_till_now: 11200000  Success_rate: 0.26  Time: 101.18s  Add_rate: 0.05 
+ Ave_reward: [-11.92 -11.04 -11.36 -11.79 -13.09 -13.24 -12.55 -12.21 -12.45 -11.99]
+[Test_after_epoch 280]
+  Success_rate: 0.26  Time: 114.73s  Add_rate: 0.05 
+ Ave_reward: [-11.92 -11.64 -12.87 -11.45 -12.11 -11.06 -12.56 -11.05 -10.73 -10.42]
+[Train_epoch 281]
+ Total_steps_till_now: 11240000  Success_rate: 0.24  Time: 102.23s  Add_rate: 0.05 
+ Ave_reward: [-13.64 -12.96 -11.88 -12.61 -11.97 -12.4  -12.62 -11.87 -12.46 -13.96]
+[Train_epoch 282]
+ Total_steps_till_now: 11280000  Success_rate: 0.24  Time: 102.15s  Add_rate: 0.05 
+ Ave_reward: [-12.36 -11.7  -12.55 -12.41 -13.26 -13.07 -12.06 -11.82 -11.86 -11.53]
+[Train_epoch 283]
+ Total_steps_till_now: 11320000  Success_rate: 0.23  Time: 101.27s  Add_rate: 0.05 
+ Ave_reward: [-13.04 -12.06 -12.09 -11.96 -11.57 -12.12 -11.73 -12.07 -12.18 -12.  ]
+[Train_epoch 284]
+ Total_steps_till_now: 11360000  Success_rate: 0.25  Time: 101.37s  Add_rate: 0.05 
+ Ave_reward: [-13.2  -12.12 -11.51 -11.62 -13.4  -12.9  -12.66 -13.11 -12.72 -12.09]
+[Train_epoch 285]
+ Total_steps_till_now: 11400000  Success_rate: 0.24  Time: 102.16s  Add_rate: 0.05 
+ Ave_reward: [-13.62 -11.93 -12.7  -12.09 -12.   -14.14 -13.21 -13.83 -12.61 -14.01]
+[Train_epoch 286]
+ Total_steps_till_now: 11440000  Success_rate: 0.27  Time: 102.71s  Add_rate: 0.05 
+ Ave_reward: [-13.09 -11.68 -11.05 -12.64 -12.61 -13.   -11.56 -13.18 -11.07 -11.46]
+[Train_epoch 287]
+ Total_steps_till_now: 11480000  Success_rate: 0.23  Time: 102.72s  Add_rate: 0.05 
+ Ave_reward: [-12.12 -13.07 -11.83 -11.89 -12.84 -11.94 -12.72 -13.47 -13.51 -12.86]
+[Train_epoch 288]
+ Total_steps_till_now: 11520000  Success_rate: 0.23  Time: 101.76s  Add_rate: 0.05 
+ Ave_reward: [-12.96 -13.4  -12.86 -13.78 -12.92 -13.22 -12.18 -12.38 -13.45 -11.3 ]
+[Train_epoch 289]
+ Total_steps_till_now: 11560000  Success_rate: 0.24  Time: 101.92s  Add_rate: 0.05 
+ Ave_reward: [-12.67 -13.17 -12.09 -13.09 -13.33 -12.09 -13.36 -13.78 -13.05 -11.83]
+[Train_epoch 290]
+ Total_steps_till_now: 11600000  Success_rate: 0.25  Time: 102.42s  Add_rate: 0.05 
+ Ave_reward: [-11.96 -12.61 -12.75 -12.25 -12.33 -12.23 -12.16 -11.25 -11.46 -11.44]
+[Test_after_epoch 290]                                                                                                                                                      
+  Success_rate: 0.27  Time: 114.86s  Add_rate: 0.05 
+ Ave_reward: [-11.39 -10.39 -12.46 -11.05 -12.02 -11.51 -11.62 -11.34 -11.06 -11.86]
+[Train_epoch 291]
+ Total_steps_till_now: 11640000  Success_rate: 0.26  Time: 101.55s  Add_rate: 0.05 
+ Ave_reward: [-12.86 -12.56 -12.76 -12.15 -11.3  -11.66 -12.25 -11.55 -11.96 -12.74]
