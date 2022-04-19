@@ -28,7 +28,7 @@ class PredatorAgent(object):
         self._state_dim = state_dim
         self._action_dim_per_unit = action_dim
         self._obs_dim_per_unit = obs_dim    # 62 for medium
-        self._obs_dim = self._obs_dim_per_unit * self._n_agent
+        self._obs_dim = self._obs_dim_per_unit * self._n_agent  # 620
 
         self._name = name
         self.update_cnt = 0
@@ -77,6 +77,22 @@ class PredatorAgent(object):
 
         return action_list
 
+    def schedule(self, obs_list):
+        priority = self.weight_generator.schedule_for_obs(np.concatenate(obs_list)
+                                                           .reshape(1, self._obs_dim))
+
+        if FLAGS.sch_type == "top":
+            schedule_idx = np.argsort(-priority)[:FLAGS.s_num]
+        elif FLAGS.sch_type == "softmax":
+            sm = softmax(priority)
+            schedule_idx = np.random.choice(self._n_agent, p=sm)
+        else: # IF N_SUM == 1
+            schedule_idx = np.argmax(priority)
+                            
+        ret = np.zeros(self._n_agent)
+        ret[schedule_idx] = 1.0
+        return ret, priority
+
     def train(self, state, obs_list, action_list, reward_list, state_next, obs_next_list, schedule_n, priority, done, global_step):
 
         s = state
@@ -120,22 +136,7 @@ class PredatorAgent(object):
 
         return 0
 
-    def schedule(self, obs_list):
-        priority = self.weight_generator.schedule_for_obs(np.concatenate(obs_list)
-                                                           .reshape(1, self._obs_dim))
-
-        if FLAGS.sch_type == "top":
-            schedule_idx = np.argsort(-priority)[:FLAGS.s_num]
-        elif FLAGS.sch_type == "softmax":
-            sm = softmax(priority)
-            schedule_idx = np.random.choice(self._n_agent, p=sm)
-        else: # IF N_SUM == 1
-            schedule_idx = np.argmax(priority)
-                            
-        ret = np.zeros(self._n_agent)
-        ret[schedule_idx] = 1.0
-        return ret, priority
-
+    
     def explore(self):
         return [random.randrange(self._action_dim_per_unit)
                 for _ in range(self._n_agent)]

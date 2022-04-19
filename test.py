@@ -1,17 +1,16 @@
-# import argparse
-# parser = argparse.ArgumentParser(description='PyTorch RL trainer')
-# parser.add_argument('--abc', default=100, type=int,help='1st paramter abc')
-# args = parser.parse_args()
-# if args.abc == 100:
-#     args.ABC = 99   # 可以直接自动添加参数
-# print(args)
+import argparse
+parser = argparse.ArgumentParser(description='PyTorch RL trainer')
+parser.add_argument('--abc', default=100, type=int,help='1st paramter abc')
+args = parser.parse_args()
+if args.abc == 100:
+    args.ABC = 99   # 可以直接自动添加参数
+print(args)
 
 from cmath import inf
 import numpy as np
-# np.concatenate()
 
-# a = ((np.array([1]), np.array([1]), np.array(range(10))),(np.array([0]), np.array([0]), np.array(range(-10))))
-# print(a)
+a = ((np.array([1]), np.array([1]), np.array(range(10))),(np.array([0]), np.array([0]), np.array(range(-10))))
+print(a)
 
 a = np.array([[1,2],[3,4]])
 print(a.reshape(1,-1))
@@ -37,3 +36,12 @@ print(np.sum(a))
 a = [np.array([1,2,3]), np.array([2,3,3])]
 print(np.concatenate(a), type(np.concatenate(a)))
 print(inf>1e100)
+
+class myclass:
+    def __init__(self,data):
+        self.data = data
+        print(id(self.data), id(data))
+        print(id(self.data) == id(data))
+
+a = np.array([1,2,3,4,5])
+b = myclass(a)

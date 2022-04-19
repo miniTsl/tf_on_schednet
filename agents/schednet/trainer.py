@@ -268,7 +268,7 @@ class Trainer(object):
         episode_num = 0
         total_reward = 0
         success_num = 0
-        #obs_cnt = np.zeros(self._n_predator)
+        
         test_strat_time = time()
         while global_step < testing_step:
             done = False
@@ -288,30 +288,16 @@ class Trainer(object):
                 obs_n_without_schedule, reward_n, done_n, info_n = self._env.step(action_n)
                 obs_n_next, state_next, h_schedule_n = self.get_obs_state_with_schedule(obs_n_without_schedule, info_n, h_schedule_n, schedule_n)
 
-                # obs_cnt += self.check_obs(obs_n_next)
-
-                # if FLAGS.gui:
-                #     self.canvas.draw(state_next * FLAGS.map_size, [0]*self._n_predator, "Test")
-
                 obs_n = obs_n_next
                 state = state_next
                 total_reward += reward_n
 
                 done = is_episode_done(done_n, step_in_episode)#, "test"):
-                    # if FLAGS.gui:
-                    #     self.canvas.draw(state_next * FLAGS.map_size, [0]*self._n_predator, "Test", True)
-                    # break
                 if done:
                     success_num += (1-self._env.env.has_failed)
-        
         np.set_printoptions(precision=2)
         print("[Test_after_epoch %d]\n" % (epochs)," Success_rate: {:.2f}".format(success_num/episode_num),
                 " Time: {:.2f}s".format(time()-test_strat_time), " Add_rate: {:.2f}".format(self._env.env.add_rate) , "\n", "Ave_reward:", total_reward/episode_num )
-    
-        # print("Test result at total steps: ", curr_ep, " Average steps to capture: ", float(global_step) / episode_num,
-        #       " Average reward: ", float(total_reward) / episode_num, "  Average obs_cnt: ",obs_cnt / episode_num)
-        #self._eval.update_value("test_result", float(global_step)/episode_num, epochs) # 结果文件中保存test数据
-
 
 def is_episode_done(done, step):
     if done or step >= FLAGS.max_steps:
