@@ -24,8 +24,8 @@ def config_agent(_flags):
     flags.DEFINE_integer("pre_train_step", 10, "during [m_size * pre_train_step] take random action")
 
     # Network training setting
-    flags.DEFINE_float("a_lr", 0.0001, "Learning rate")
-    flags.DEFINE_float("w_lr", 0.0001, "Learning rate")
+    flags.DEFINE_float("a_lr", 0.001, "Learning rate")
+    flags.DEFINE_float("w_lr", 0.001, "Learning rate")
     flags.DEFINE_float("c_lr", 0.001, "Learning rate")
     flags.DEFINE_float("tau", 0.05, "Learning rate")
     flags.DEFINE_boolean("use_action_in_critic", False, "Use guided samples")
@@ -43,8 +43,8 @@ def config_agent(_flags):
     flags.DEFINE_string("sched", "schedule", "Scheduler type")
     flags.DEFINE_string("sch_type", "top", "Scheduling algorithm type (top, softmax)")
     
-    flags.DEFINE_integer("capa", 2, "Capacity for comm")
-    flags.DEFINE_integer("s_num", 1, "Number of agent for sheduling")
+    flags.DEFINE_integer("capa", 3, "Capacity for comm")
+    flags.DEFINE_integer("s_num", 2, "Number of agent for sheduling")
 
     
 def get_filename():
