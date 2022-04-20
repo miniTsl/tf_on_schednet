@@ -20,7 +20,7 @@ class WeightGeneratorNetwork:
 
         self.sess = sess
         self.obs_dim = obs_dim # concatenated observation space
-        self.n_player = n_player
+        self.n_player = n_player    # n_agent: 4
 
         # placeholders
         self.obs_ph = tf.placeholder(dtype=tf.float32, shape=[None, self.obs_dim])

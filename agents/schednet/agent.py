@@ -24,9 +24,9 @@ class PredatorAgent(object):
     def __init__(self, n_agent, action_dim, state_dim, obs_dim, name=""):
         logger.info("Predator Agent is created")
 
-        self._n_agent = n_agent
-        self._state_dim = state_dim
-        self._action_dim_per_unit = action_dim
+        self._n_agent = n_agent # 10
+        self._state_dim = state_dim # ？？
+        self._action_dim_per_unit = action_dim  # 1？
         self._obs_dim_per_unit = obs_dim    # 62 for medium
         self._obs_dim = self._obs_dim_per_unit * self._n_agent  # 620
 
